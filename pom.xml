@@ -52,6 +52,13 @@
             <artifactId>best-pay-sdk</artifactId>
             <version>1.1.0</version>
         </dependency>
+        <!-- add by me -->
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>1.2.6</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
