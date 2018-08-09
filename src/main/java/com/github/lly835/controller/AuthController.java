@@ -1,9 +1,9 @@
 package com.github.lly835.controller;
 
-import com.github.lly835.Utils.HttpUtils;
-import com.github.lly835.Utils.IoUtils;
-import com.github.lly835.Utils.Tools;
+import com.alibaba.fastjson.JSONObject;
+import com.github.lly835.Utils.*;
 import com.github.lly835.bean.FirstValidation;
+import com.github.lly835.service.BaiDuWeatherService;
 import com.github.lly835.service.CoreService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.security.MessageDigest;
 import java.util.Arrays;
+import java.util.Map;
 
 @Controller
 public class AuthController {
@@ -45,19 +46,38 @@ public class AuthController {
 //    public String coreByPost(Model model) {//异常怎么统一处理？
 //        return "";
 //    }
+//    @RequestMapping(value = "/core", method = RequestMethod.POST)
+//    public String coreByPost(Model model,HttpServletRequest request, HttpServletResponse response) throws Exception{//异常怎么统一处理？
+//        logger.info("-------");
+//        request.setCharacterEncoding("UTF-8");
+//        response.setCharacterEncoding("UTF-8");
+//
+//        // 调用核心业务类接收消息、处理消息
+////      String respMessage = CoreService.processRequest(request);
+//        String respMessage = CoreService.processRequest(request,0);
+//
+//        // 响应消息
+//        PrintWriter out = response.getWriter();
+//        out.print(respMessage);
+//        out.close();
+//        return "";
+//    }
     @RequestMapping(value = "/core", method = RequestMethod.POST)
-    public String coreByPost(Model model,HttpServletRequest request, HttpServletResponse response) throws Exception{//异常怎么统一处理？
+    public String coreByPost1(Model model,HttpServletRequest request, HttpServletResponse response) throws Exception{//异常怎么统一处理？
         logger.info("-------");
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
 
         // 调用核心业务类接收消息、处理消息
-//      String respMessage = CoreService.processRequest(request);
-        String respMessage = CoreService.processRequest(request,0);
+        //String respMessage = CoreService.processRequest(request);
+        //String respMessage = CoreService.processRequest(request,0);
 
-        // 响应消息
+        String respMsg= weather(request,response);
+
+//        // 响应消息
         PrintWriter out = response.getWriter();
-        out.print(respMessage);
+        //out.print(respMessage);
+        out.print(respMsg);
         out.close();
         return "";
     }
@@ -160,5 +180,32 @@ public class AuthController {
     }
 
 
-
+    public String weather(HttpServletRequest req, HttpServletResponse resp) throws  Exception{
+//      req.setCharacterEncoding("UTF-8");
+//      resp.setCharacterEncoding("UTF-8");
+        //PrintWriter out = resp.getWriter();
+        String message = null;
+        try {
+            Map<String,String> map = MessageUtils.xmlToMap(req);
+            String toUserName = map.get("ToUserName");
+            String fromUserName = map.get("FromUserName");
+            String msgType = map.get("MsgType");
+            String content = map.get("Content");
+            //MessageUtil.MESSAGE_TEXT就是 text
+            if(MessageUtils.MESSAGE_TEXT.equals(msgType)){
+                if(content.endsWith("天气")){
+                    String keyWord = content.replaceAll("天气", "").trim();
+                    //message = MessageUtils.initText(toUserName, fromUserName,BaiDuWeatherService.getSend(keyWord));
+                    message = MessageUtils.initText(toUserName, fromUserName,WeatherUtil.getTodayWeatherChina(keyWord));
+                    //message =WeatherUtil.getTodayWeatherChina(keyWord);
+                }
+            }
+            //out.print(message);
+        }catch (Exception e) {
+            // TODO: handle exception,
+            e.printStackTrace();
+            //out.close();
+        }
+        return message;
+    }
 }
