@@ -1,7 +1,10 @@
 package com.github.lly835.controller;
 
+import com.github.lly835.Utils.HttpUtils;
+import com.github.lly835.Utils.IoUtils;
 import com.github.lly835.Utils.Tools;
 import com.github.lly835.bean.FirstValidation;
+import com.github.lly835.service.CoreService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -11,6 +14,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.InputStream;
+import java.io.PrintWriter;
 import java.security.MessageDigest;
 import java.util.Arrays;
 
@@ -35,8 +41,24 @@ public class AuthController {
             return "";
         }
     }
+//    @RequestMapping(value = "/core", method = RequestMethod.POST)
+//    public String coreByPost(Model model) {//异常怎么统一处理？
+//        return "";
+//    }
     @RequestMapping(value = "/core", method = RequestMethod.POST)
-    public String coreByPost(Model model) {//异常怎么统一处理？
+    public String coreByPost(Model model,HttpServletRequest request, HttpServletResponse response) throws Exception{//异常怎么统一处理？
+        logger.info("-------");
+        request.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding("UTF-8");
+
+        // 调用核心业务类接收消息、处理消息
+//      String respMessage = CoreService.processRequest(request);
+        String respMessage = CoreService.processRequest(request,0);
+
+        // 响应消息
+        PrintWriter out = response.getWriter();
+        out.print(respMessage);
+        out.close();
         return "";
     }
 
@@ -45,6 +67,53 @@ public class AuthController {
     public String menu(Model model) throws Exception{//异常怎么统一处理？
         return Tools.createCustomMenu();
     }
+
+    @ResponseBody
+    @RequestMapping(value = "/users")
+    public String users(Model model) throws Exception{//异常怎么统一处理？
+        String NEXT_OPENID="";
+        String url="https://api.weixin.qq.com/cgi-bin/user/get?access_token="+Tools.getAccessToken();//+"&next_openid="+NEXT_OPENID;
+                 //"https://api.weixin.qq.com/cgi-bin/user/get?access_token=ACCESS_TOKEN&next_openid=NEXT_OPENID"
+        InputStream inputStream = HttpUtils.connectHttp(url, "GET", null);
+        String m = IoUtils.inputStreamToString(inputStream);
+        logger.info("userList={}",m);
+        return m;
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/users1")
+    public String userlist1(Model model) throws Exception{//异常怎么统一处理？
+        String NEXT_OPENID="otxDk0zYyIF3J4k6FaYdP03szzZw";
+        String url="https://api.weixin.qq.com/cgi-bin/user/get?access_token="+Tools.getAccessToken()+"&next_openid="+NEXT_OPENID;
+        //"https://api.weixin.qq.com/cgi-bin/user/get?access_token=ACCESS_TOKEN&next_openid=NEXT_OPENID"
+        InputStream inputStream = HttpUtils.connectHttp(url, "GET", null);
+        String m = IoUtils.inputStreamToString(inputStream);
+        logger.info("userList1={}",m);
+        return m;
+    }
+    @ResponseBody
+    @RequestMapping(value = "/users2")
+    public String userlist2(Model model) throws Exception{//异常怎么统一处理？
+        String NEXT_OPENID="otxDk0zA5WURxxdG85zxjja31BKc";
+        String url="https://api.weixin.qq.com/cgi-bin/user/get?access_token="+Tools.getAccessToken()+"&next_openid="+NEXT_OPENID;
+        //"https://api.weixin.qq.com/cgi-bin/user/get?access_token=ACCESS_TOKEN&next_openid=NEXT_OPENID"
+        InputStream inputStream = HttpUtils.connectHttp(url, "GET", null);
+        String m = IoUtils.inputStreamToString(inputStream);
+        logger.info("userList2={}",m);
+        return m;
+    }
+    @ResponseBody
+    @RequestMapping(value = "/users3")
+    public String userlist3(Model model) throws Exception{//异常怎么统一处理？
+        String NEXT_OPENID="otxDk002XuvoHNEsEHgDIbhbYkSs";
+        String url="https://api.weixin.qq.com/cgi-bin/user/get?access_token="+Tools.getAccessToken()+"&next_openid="+NEXT_OPENID;
+        //"https://api.weixin.qq.com/cgi-bin/user/get?access_token=ACCESS_TOKEN&next_openid=NEXT_OPENID"
+        InputStream inputStream = HttpUtils.connectHttp(url, "GET", null);
+        String m = IoUtils.inputStreamToString(inputStream);
+        logger.info("userList3={}",m);
+        return m;
+    }
+
 
     /**
      * Mar 14, 2016 6:27:19 PM
@@ -89,6 +158,7 @@ public class AuthController {
         }
         return flag;
     }
+
 
 
 }
