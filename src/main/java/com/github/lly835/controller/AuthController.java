@@ -69,14 +69,14 @@ public class AuthController {
         response.setCharacterEncoding("UTF-8");
 
         // 调用核心业务类接收消息、处理消息
-        //String respMessage = CoreService.processRequest(request);
+        //String respMessage = CoreService.processRequest(request);//ok 1-5
         //String respMessage = CoreService.processRequest(request,0);
 
         String respMsg= weather(request,response);
 
 //        // 响应消息
         PrintWriter out = response.getWriter();
-        //out.print(respMessage);
+        //out.print(respMessage);//ok 1-5
         out.print(respMsg);
         out.close();
         return "";
